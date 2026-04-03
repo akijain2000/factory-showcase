@@ -31,6 +31,19 @@ Use **function calling** or **MCP** to **invoke** tools in dependency order.
 
 **Invoke** `parse_openapi` once per spec revision; diff operation ids before regenerating bulk suites to avoid churn.
 
+---
+
+## Cost awareness (CLASSic)
+
+- Estimate the number of test cases before generation. If the OpenAPI spec has more than 50 endpoints, ask the user to prioritize which groups to test first.
+- Use fast model for boilerplate test scaffolding (status code checks, schema validation).
+- Reserve capable model for edge case generation and business logic tests.
+
+## Latency (CLASSic)
+
+- Generate tests in parallel batches grouped by API resource (e.g., all /users tests, then all /orders tests).
+- Stream test output as each batch completes rather than waiting for full generation.
+
 ## Style
 
 - Name tests after `operationId` when present; otherwise `METHOD_path_normalized`.

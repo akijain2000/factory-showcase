@@ -1,135 +1,168 @@
-# Factory Showcase: 10 Skills + 10 Agents
+# Factory Showcase: 20 Skills + 20 Agents (Karpathy Loop)
 
-Testing and validating both [Skill Factory](https://github.com/akijain2000/skill-factory) and [Agent Factory](https://github.com/akijain2000/agent-factory) by producing real outputs, grading them against their respective quality specs, and feeding improvements back into both repositories.
+Testing and validating both [Skill Factory](https://github.com/akijain2000/skill-factory) and [Agent Factory](https://github.com/akijain2000/agent-factory) by producing real outputs, grading them with three evaluation frameworks, and feeding improvements back through 5 Karpathy-style auto-research cycles.
 
-## What This Is
+## Methodology: Adapted Karpathy Auto-Research Loop
 
-A test suite for two AI knowledge bases:
+Inspired by [Karpathy's autoresearch](https://github.com/karpathy/autoresearch): one editable surface, fixed metrics, continuous create-evaluate-keep/discard cycles.
 
-- **10 Skills** authored following `SKILL_SPEC.md` — each tests a different skill archetype (micro, workflow, reference-heavy, script-bundled, etc.)
-- **10 Agents** structured per `AGENT_SPEC.md` — each tests a different architecture (ReAct, multi-agent, plan-and-execute, safety-critical, etc.)
-- **Grading reports** with automated validator results + full manual spec-dimension scoring
-- **Improvement findings** applied back to both factory repositories
+```
+Cycle 1: CREATE      -- 10 new agents + 20 paired skills, baseline grading
+Cycle 2: CLASSic     -- Cost/Latency/Accuracy/Stability/Security evaluation, improve bottom 5
+Cycle 3: AdaRubric   -- Task-adaptive rubrics, domain-specific scoring, fix flagged dims
+Cycle 4: TRACES      -- Parallel reasoning traces, validator improvements, combined eval
+Cycle 5: CONVERGE    -- Final re-grade, delta report, push improvements to all repos
+```
 
 ## Results at a Glance
 
-### Skills (mean 9.2/10, excluding intentionally flawed #10)
+### Agents (Combined: 5.9/10 across 3 frameworks)
 
 ```
-Validator: 9/10 PASS, 1 WARN (intentional)
-Spec:      Mean 9.2 across name, description, body, content, style, evaluation
-Weakest:   Evaluation (7.0 avg) — no test scenarios in any skill
+AGENT_SPEC (8-dim):  Mean 7.8 / 10  (was 7.6 at Cycle 1)
+CLASSic (5-dim):     Mean 5.7 / 10  (was 5.5 at Cycle 1)
+AdaRubric (5-dim):   Mean 3.7 / 5.0
+Validator:           20/20 pass, 0 fail (10 checks each)
+Top agents:          13-cost-optimizer (6.8), 16-parallel-executor (6.6), 18-security-hardened (6.6)
 ```
 
-### Agents (mean 7.5/10)
+### Skills (Mean: 9.1/10)
 
 ```
-Validator: 10/10 ALL PASS (6 checks each)
-Spec:      Mean 7.5 across 8 AGENT_SPEC dimensions
-Best:      db-admin-agent (8.0), incident-responder (8.0)
-Weakest:   Observability (6.1 avg), Testing (6.4 avg)
+SKILL_SPEC:  Mean 9.1 / 10  (was 8.7 at Cycle 1)
+Validator:   20/20 pass, 0 warnings (15 checks each)
+All skills have test scenarios, examples, and gotchas sections
 ```
+
+## Agents Overview (20)
+
+| # | Agent | Architecture | Tools | Combined | Pattern Era |
+|---|-------|-------------|-------|----------|-------------|
+| 1 | file-organizer | Minimal ReAct | 3 | 5.4 | Classic |
+| 2 | research-assistant | ReAct + RAG | 5 | 5.8 | Classic |
+| 3 | code-review-agent | Multi-agent supervisor | 7 | 5.7 | Classic |
+| 4 | migration-planner | Plan-and-Execute | 6 | 5.9 | Classic |
+| 5 | db-admin-agent | Safety-critical + HITL | 5 | 6.3 | Classic |
+| 6 | learning-tutor | Memory-heavy | 4 | 5.5 | Classic |
+| 7 | incident-responder | Autonomous loop | 5 | 6.3 | Classic |
+| 8 | api-test-generator | Tool-heavy pipeline | 6 | 5.6 | Classic |
+| 9 | docs-maintainer | MCP-forward | 5 | 5.4 | Classic |
+| 10 | support-triage | Routing + classification | 5 | 5.6 | Classic |
+| 11 | context-engineer | ACE context evolution | 5 | 5.9 | 2026 |
+| 12 | streaming-pipeline | Event-driven streaming | 5 | 6.0 | 2026 |
+| 13 | cost-optimizer | Budget-aware routing | 5 | 6.8 | 2026 |
+| 14 | self-improver | Karpathy harness | 5 | 6.1 | 2026 |
+| 15 | a2a-coordinator | Agent-to-Agent protocol | 5 | 6.0 | 2026 |
+| 16 | parallel-executor | Fan-out/fan-in concurrency | 5 | 6.6 | 2026 |
+| 17 | eval-agent | AdaRubric evaluator | 5 | 6.1 | 2026 |
+| 18 | security-hardened | Defense-in-depth | 5 | 6.6 | 2026 |
+| 19 | workflow-orchestrator | DAG engine | 5 | 6.0 | 2026 |
+| 20 | knowledge-graph | Entity + graph reasoning | 5 | 5.7 | 2026 |
+
+## Skills Overview (20 paired 1:1 with agents)
+
+| # | Skill | Paired Agent | Overall |
+|---|-------|-------------|---------|
+| s01 | file-organization | 01-file-organizer | 9.0 |
+| s02 | research-synthesis | 02-research-assistant | 9.2 |
+| s03 | code-review-orchestration | 03-code-review-agent | 9.0 |
+| s04 | migration-planning | 04-migration-planner | 9.2 |
+| s05 | database-safety-gates | 05-db-admin-agent | 9.2 |
+| s06 | adaptive-tutoring | 06-learning-tutor | 9.0 |
+| s07 | incident-response-runbook | 07-incident-responder | 9.2 |
+| s08 | api-test-generation | 08-api-test-generator | 9.2 |
+| s09 | docs-sync-via-mcp | 09-docs-maintainer | 9.2 |
+| s10 | support-routing | 10-support-triage | 9.0 |
+| s11 | context-engineering | 11-context-engineer | 9.0 |
+| s12 | streaming-event-design | 12-streaming-pipeline | 9.0 |
+| s13 | cost-aware-model-routing | 13-cost-optimizer | 9.2 |
+| s14 | self-improvement-harness | 14-self-improver | 9.2 |
+| s15 | agent-to-agent-delegation | 15-a2a-coordinator | 9.0 |
+| s16 | parallel-tool-execution | 16-parallel-executor | 9.0 |
+| s17 | adaptive-evaluation | 17-eval-agent | 9.2 |
+| s18 | prompt-injection-defense | 18-security-hardened | 9.0 |
+| s19 | workflow-dag-design | 19-workflow-orchestrator | 9.2 |
+| s20 | knowledge-graph-reasoning | 20-knowledge-graph | 9.0 |
 
 ## Directory Structure
 
 ```
 factory-showcase/
 ├── README.md
-├── improvements.md            # findings + changes to both factories
+├── improvements.md
+├── scripts/
+│   ├── classic-evaluator.md          # CLASSic 5-dim scoring template
+│   └── adarubric-generator.md        # AdaRubric adaptive rubric generator
+├── examples/
+│   └── parallel-traces/              # 3 worked trace examples
+│       ├── 01-fan-out-api-testing.md
+│       ├── 02-dag-workflow-checkpoint.md
+│       └── 03-multi-agent-delegation.md
 ├── skills/
-│   ├── 01-commit-message-writer/     # Micro skill (~30 lines)
-│   ├── 02-api-endpoint-reviewer/     # Standard workflow
-│   ├── 03-db-migration-guide/        # Reference-heavy (+ references/)
-│   ├── 04-dependency-audit/          # Script-bundled (+ scripts/)
-│   ├── 05-docker-debug/              # Gotchas-heavy
-│   ├── 06-pr-description-writer/     # Anti-rationalization table
-│   ├── 07-test-coverage-analyzer/    # Multi-host portable
-│   ├── 08-rfc-template-writer/       # Template-driven
-│   ├── 09-code-review-checklist/     # Progressive disclosure (+ references/)
-│   └── 10-flawed-skill-for-review/   # Intentionally flawed for testing
+│   ├── s01-file-organization/        ... s20-knowledge-graph-reasoning/
+│   └── (20 skill directories, each with SKILL.md)
 ├── agents/
-│   ├── 01-file-organizer/            # Minimal ReAct
-│   ├── 02-research-assistant/        # ReAct + RAG
-│   ├── 03-code-review-agent/         # Multi-agent supervisor
-│   ├── 04-migration-planner/         # Plan-and-Execute
-│   ├── 05-db-admin-agent/            # Safety-critical + HITL
-│   ├── 06-learning-tutor/            # Memory-heavy
-│   ├── 07-incident-responder/        # Autonomous loop + circuit breakers
-│   ├── 08-api-test-generator/        # Tool-heavy (6 tools)
-│   ├── 09-docs-maintainer/           # MCP-forward
-│   └── 10-support-triage/            # Routing + classification
+│   ├── 01-file-organizer/            ... 20-knowledge-graph/
+│   └── (20 agent directories, each with README.md, system-prompt.md, tools/, tests/, src/)
 └── grading/
-    ├── skill-scores.md               # Full SKILL_SPEC grading
-    └── agent-scores.md               # Full AGENT_SPEC grading (8 dimensions)
+    ├── cycle-1-baseline.md           # Initial 8-dim + SKILL_SPEC grading
+    ├── cycle-2-classic.md            # CLASSic 5-dim scoring + bottom 5 improvements
+    ├── cycle-3-adarubric.md          # AdaRubric adaptive scoring + flagged fixes
+    ├── cycle-4-combined.md           # Combined 3-framework re-evaluation
+    ├── cycle-5-final.md              # Final convergence grading
+    ├── delta-report.md               # Cycle 1 vs Cycle 5 comparison
+    ├── skill-scores.md               # Original 10 skill grading (legacy)
+    └── agent-scores.md               # Original 10 agent grading (legacy)
 ```
-
-## Skills Overview
-
-Each skill follows [SKILL_SPEC.md](https://github.com/akijain2000/skill-factory/blob/main/SKILL_SPEC.md) with proper YAML frontmatter, action verb + trigger clause in description, and structured body.
-
-| # | Skill | Pattern | Lines | Score | Key Feature |
-|---|-------|---------|-------|-------|-------------|
-| 1 | commit-message-writer | Micro | ~38 | 9.2 | Minimal body, strong description, single behavior loop |
-| 2 | api-endpoint-reviewer | Standard workflow | ~90 | 9.2 | Numbered steps, pass/fail output table, gotchas |
-| 3 | db-migration-guide | Reference-heavy | ~50+84 | 9.2 | SKILL.md + references/checklist.md |
-| 4 | dependency-audit | Script-bundled | ~70 | 9.1 | scripts/scan.sh with error handling and documented deps |
-| 5 | docker-debug | Gotchas-heavy | ~100 | 9.2 | Platform-specific gotchas, delta-from-baseline framing |
-| 6 | pr-description-writer | Anti-rationalization | ~90 | 9.3 | 6-row anti-rationalization table |
-| 7 | test-coverage-analyzer | Multi-host portable | ~80 | 9.2 | No host-specific paths, filesystem-only analysis |
-| 8 | rfc-template-writer | Template-driven | ~100 | 9.3 | Complete 12-section RFC template |
-| 9 | code-review-checklist | Progressive disclosure | ~55+154 | 9.2 | TOC on 154-line reference checklist |
-| 10 | flawed-skill-for-review | Intentionally flawed | ~36 | 2.2 | Missing description, empty sections, slop words, first person |
-
-## Agents Overview
-
-Each agent follows the [AGENT_SPEC.md](https://github.com/akijain2000/agent-factory/blob/main/AGENT_SPEC.md) canonical structure: `README.md` (with Architecture), `system-prompt.md` (with persona, constraints, tool instructions), `tools/`, `tests/`, and `src/`.
-
-| # | Agent | Architecture | Tools | Score | Key Feature |
-|---|-------|-------------|-------|-------|-------------|
-| 1 | file-organizer | Minimal ReAct | 3 | 7.0 | Simplest compliant agent — reference implementation |
-| 2 | research-assistant | ReAct + RAG | 5 | 7.4 | Memory system, source citations, retrieval pipeline |
-| 3 | code-review-agent | Multi-agent | 7 | 7.6 | Supervisor + 3 sub-reviewers, deduplication |
-| 4 | migration-planner | Plan-and-Execute | 6 | 7.8 | Upfront planning, dry-run, rollback capability |
-| 5 | db-admin-agent | Safety-critical | 5 | 8.0 | HITL gates, sandboxing, destructive action guards |
-| 6 | learning-tutor | Memory-heavy | 4 | 7.1 | Episodic + semantic memory, difficulty adaptation |
-| 7 | incident-responder | Autonomous loop | 5 | 8.0 | Step budgets, circuit breakers, escalation thresholds |
-| 8 | api-test-generator | Tool-heavy | 6 | 7.1 | Structured test output, OpenAPI parsing pipeline |
-| 9 | docs-maintainer | MCP-forward | 5 | 7.1 | MCP tool discovery, multi-source sync |
-| 10 | support-triage | Routing + classification | 5 | 7.5 | Intent classification, routing rules, escalation |
 
 ## Improvements Made to Both Factories
 
-Based on the grading findings, the following changes were applied:
+### Cycle 2: CLASSic Framework
+- Added cost/budget awareness to 5 agents (system prompts)
+- Identified that cost is the weakest operational dimension across all agents
 
-### Skill Factory
-- **validate-skill.ts**: Added test scenario check — warns when SKILL.md lacks a test/evaluation section (addresses the consistent 7/10 Evaluation score)
+### Cycle 3: AdaRubric
+- Fixed 2 flagged dimensions (file-organizer undo safety, support-triage feedback loop)
+- Improved 3 skills (api-test-generation, docs-sync, knowledge-graph-reasoning)
 
-### Agent Factory
-- **validate-agent.ts**: Added `src/` directory check — warns when canonical source directory is missing
-- **validate-agent.ts**: Added `deploy/` directory check — warns when canonical deploy directory is missing
+### Cycle 4: Validator Improvements
+- **validate-agent.ts**: +2 checks (cost awareness, output validation)
+- **validate-skill.ts**: +2 checks (example presence, gotchas section)
 
-### Not Yet Implemented (Research-Based)
-- CLASSic framework (Cost, Latency, Accuracy, Stability, Security) as supplementary evaluation dimensions
-- AdaRubric-style task-adaptive evaluation rubrics
-- Parallel reasoning trace patterns for course content
+### Karpathy Loop Delta
 
-See [improvements.md](improvements.md) for full details.
+| Metric | Before | After | Change |
+|--------|--------|-------|--------|
+| Agent AGENT_SPEC mean | 7.6 | 7.8 | +0.2 |
+| Agent CLASSic mean | 5.5 | 5.7 | +0.2 |
+| Skill mean | 8.7 | 9.1 | +0.4 |
+| Agent validator checks | 8 | 10 | +25% |
+| Skill validator checks | 13 | 15 | +15% |
+| Regressions | -- | 0 | None |
 
-## How to Run the Validators Yourself
+See [delta-report.md](grading/delta-report.md) for full analysis.
 
-### Skills
+## How to Run
+
+### Validate a Skill
 ```bash
 cd /path/to/skill-factory
-bun scripts/validate-skill.ts /path/to/factory-showcase/skills/01-commit-message-writer/
+bun scripts/validate-skill.ts /path/to/factory-showcase/skills/s01-file-organization/
 ```
 
-### Agents
+### Validate an Agent
 ```bash
 cd /path/to/agent-factory
 bun scripts/validate-agent.ts /path/to/factory-showcase/agents/01-file-organizer/
 ```
 
+### Score with CLASSic
+See [scripts/classic-evaluator.md](scripts/classic-evaluator.md) for the scoring template.
+
+### Score with AdaRubric
+See [scripts/adarubric-generator.md](scripts/adarubric-generator.md) for adaptive rubric generation.
+
 ## Companion Projects
 
-- [Skill Factory](https://github.com/akijain2000/skill-factory) — LLM knowledge base for authoring AI agent skills
-- [Agent Factory](https://github.com/akijain2000/agent-factory) — LLM knowledge base for building production-quality AI agents
+- [Skill Factory](https://github.com/akijain2000/skill-factory) -- LLM knowledge base for authoring AI agent skills
+- [Agent Factory](https://github.com/akijain2000/agent-factory) -- LLM knowledge base for building production-quality AI agents

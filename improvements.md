@@ -1,75 +1,94 @@
-# Improvements: Findings and Changes
+# Improvements: 5-Cycle Karpathy Loop Findings
 
-Based on grading 10 skills and 10 agents against their respective quality specs, the following systematic weaknesses were identified and fixes applied to both factory repositories.
+Based on grading 20 skills and 20 agents across 5 improvement cycles using 3 evaluation frameworks (AGENT_SPEC, CLASSic, AdaRubric).
 
-## Key Findings
+## Cycle 1: Baseline Creation
 
-### Skill Factory
+- Created 10 new agents (11-20) covering 2026-era patterns: context engineering, streaming, cost optimization, self-improvement, A2A, parallel execution, adaptive evaluation, security hardening, workflow orchestration, knowledge graphs
+- Created 20 paired skills (s01-s20) matching each agent 1:1
+- Baseline: 20/20 agents pass validation, 20/20 skills pass validation
 
-| Finding | Severity | Evidence |
-|---------|----------|----------|
-| No test scenario validation | High | 9/10 skills lack the SKILL_SPEC-required ">=3 test scenarios". Validator did not catch this. |
-| Evaluation is consistently weakest dimension | Medium | All good skills scored 7/10 on Evaluation — lowest of all dimensions. |
-| Validator passes skills with no examples | Low | SKILL_SPEC recommends examples but validator does not check for them. |
+## Cycle 2: CLASSic Framework
 
-### Agent Factory
+### Key Finding
+Cost awareness is the weakest operational dimension. Only 5/20 agents mentioned cost, budget, or token tracking before improvements.
 
-| Finding | Severity | Evidence |
-|---------|----------|----------|
-| No `src/` directory validation | High | AGENT_SPEC canonical structure requires `src/` but validator did not check. |
-| No `deploy/` directory validation | High | Same gap for `deploy/` directory. |
-| Testing dimension consistently weak (mean 6.4) | Medium | All agents have exactly 1 behavioral test — minimum spec compliance only. |
-| Observability dimension weakest (mean 6.1) | Medium | Only 2/10 agents have explicit tracing/logging design. |
-| Memory design underexplored (mean 6.4) | Medium | Only 2/10 agents have thoughtful memory architectures. |
-| Secret pattern regex too broad | Low | `OPENAI` in env var names (e.g., `MODEL_API_KEY` docs) triggered false positives initially. |
+### Changes
+- Added cost/budget awareness sections to 5 agent system prompts (01, 02, 06, 08, 09)
+- Added latency guidance to same 5 agents
+- CLASSic mean: 5.5 -> 5.7
 
-## Changes Applied
+## Cycle 3: AdaRubric Adaptive Evaluation
 
-### Skill Factory: `scripts/validate-skill.ts`
+### Key Finding
+Fixed rubrics miss domain-specific blind spots. AdaRubric flagged 2 dimensions that generic scoring would not catch.
 
-**Added test scenario check:** The validator now warns when SKILL.md body lacks a test/evaluation/scenarios/verify section, pointing to the SKILL_SPEC requirement for >=3 test scenarios.
+### Changes
+- **01-file-organizer**: Added undo/rollback safety (was missing entirely)
+- **10-support-triage**: Added customer satisfaction feedback loop
+- **s08-api-test-generation**: Added edge case generation step
+- **s09-docs-sync-via-mcp**: Added freshness scoring step
+- **s20-knowledge-graph-reasoning**: Added entity confidence scoring
 
+## Cycle 4: Validator Infrastructure
+
+### Key Finding
+Three cycles of grading data revealed consistent validator gaps. Checks that exist in the spec but not in the validator cannot be enforced at scale.
+
+### Skill Factory: `validate-skill.ts` (+2 checks)
+
+**Example/code block check:**
 ```typescript
-// Test scenarios check (SKILL_SPEC requires >=3 real test scenarios)
-const hasTestSection = /#{1,3}\s*(test|evaluation|scenarios|verify)/i.test(body);
-if (!hasTestSection) {
-  issues.push({ severity: "warning", message: "No test/evaluation section found..." });
+const hasExamples = /#{1,3}\s*(example|sample|demo|output format)/i.test(body) || /```/.test(body);
+if (!hasExamples) {
+  issues.push({ severity: "warning", message: "No examples or code blocks found..." });
 }
 ```
 
-### Agent Factory: `scripts/validate-agent.ts`
-
-**Added `src/` directory check:** Warns when the canonical `src/` directory is missing or empty.
-
-**Added `deploy/` directory check:** Warns when the canonical `deploy/` directory is missing.
-
-**Both checks are warnings (not errors)** since some agent projects may use alternative layouts while still meeting spec intent.
-
+**Gotchas section check:**
 ```typescript
-const srcN = srcExists ? fs.readdirSync(srcPath).filter(...).length : 0;
-out("Source directory", srcN > 0 ? "Pass" : "Warn", ...);
-
-const deployExists = exists(deployPath) && fs.statSync(deployPath).isDirectory();
-out("Deploy directory", deployExists ? "Pass" : "Warn", ...);
+const hasGotchas = /#{1,3}\s*(gotcha|caveat|warning|pitfall|known issue)/i.test(body);
+if (!hasGotchas) {
+  issues.push({ severity: "info", message: "No gotchas/caveats section found..." });
+}
 ```
 
-## Research-Backed Recommendations (Not Yet Implemented)
+### Agent Factory: `validate-agent.ts` (+2 checks)
 
-From web research on 2026 best practices:
+**Cost awareness check:**
+```typescript
+const costAware = /\b(cost|budget|token|expense|price|spending)\b/i.test(promptText);
+out("Cost awareness", costAware ? "Pass" : "Warn", ...);
+```
 
-1. **CLASSic Framework** (Cost, Latency, Accuracy, Stability, Security): Could complement the existing 8 AGENT_SPEC dimensions for production evaluation. Source: Zylos Research 2026 agent evaluation guide.
+**Output validation check:**
+```typescript
+const outputVal = /\b(verif|validat|check|confirm|assert)\b/i.test(promptText);
+out("Output validation", outputVal ? "Pass" : "Warn", ...);
+```
 
-2. **AdaRubric pattern** (task-adaptive evaluation): Rather than fixed grading dimensions, generate task-specific rubrics. Source: arxiv.org/abs/2603.21362.
+## Cycle 5: Convergence
 
-3. **Parallel reasoning traces**: 2026 agent patterns support parallel tool execution with trace aggregation. Could be added to course Module 07 (Planning and Reasoning).
+### Final State
+- Agent AGENT_SPEC mean: 7.8 (was 7.6)
+- Skill mean: 9.1 (was 8.7)
+- Zero regressions across all cycles
+- 4 new validator checks (2 per factory)
 
-4. **Docker Agent / CUGA patterns**: Production multi-agent systems using declarative YAML configs. Could inform Agent Factory's multi-agent course modules.
+### Research Implemented
+- CLASSic framework (Cost, Latency, Accuracy, Stability, Security) -- fully implemented as scoring template
+- AdaRubric task-adaptive evaluation -- fully implemented as rubric generator
+- Parallel reasoning trace patterns -- 3 worked examples created
 
 ## Quantitative Impact
 
-| Metric | Before | After |
-|--------|--------|-------|
-| Skill validator checks | 12 | 13 (+test scenario warning) |
-| Agent validator checks | 6 | 8 (+src, +deploy warnings) |
-| Skills passing all checks (excl. #10) | 9/9 | 9/9 (new warning is additive) |
-| Agents passing all checks | 10/10 | 10/10 (new warnings are additive) |
+| Metric | Before Loop | After Loop |
+|--------|------------|------------|
+| Skill validator checks | 13 | 15 |
+| Agent validator checks | 8 | 10 |
+| Skills passing all checks | 20/20 | 20/20 |
+| Agents passing all checks (core) | 20/20 | 20/20 |
+| Agent combined score | 5.7 | 5.9 |
+| Skill mean score | 8.7 | 9.1 |
+| Regressions | -- | 0 |
+| Items created | 10+10 | 20+20 |

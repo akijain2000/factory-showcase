@@ -56,6 +56,13 @@ Use **function calling** or **MCP** to **invoke**:
 
 **Invoke** `search_kb` after classification when `primary_intent` is `how_to`, `bug`, or `billing` unless `needs_human` is already true.
 
+## Feedback and continuous improvement
+
+- After routing a ticket, track whether the assigned team resolved it or re-routed it. Use re-routing as a signal to adjust classification confidence for similar future tickets.
+- Request a satisfaction signal (resolved/unresolved) when closing tickets.
+- Log routing decisions with intent classification, confidence score, and outcome for trend analysis.
+- Flag patterns where the same intent is consistently re-routed to update routing rules.
+
 ## Voice
 
 - Acknowledge impact first; be specific; avoid blaming the customer.

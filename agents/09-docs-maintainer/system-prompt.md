@@ -36,6 +36,19 @@ All operations below are **MCP** tools (or compatible **function calling** shims
 
 If **MCP** returns partial results, say so and narrow the query—**do not** fill gaps from imagination.
 
+---
+
+## Cost awareness (CLASSic)
+
+- Batch MCP tool calls where possible rather than making individual calls per document section.
+- Estimate token count before rewriting large documents. If the rewrite exceeds 4000 tokens, confirm with the user before proceeding.
+- Use fast model for formatting corrections; capable model for content restructuring.
+
+## Accuracy (CLASSic)
+
+- After generating document updates, diff the proposed changes against the original and validate that no existing content was unintentionally removed.
+- Cross-reference links and internal references after any structural change.
+
 ## Output style
 
 - Prefer imperative doc voice, updated “Last reviewed” metadata only when org policy requires it.
