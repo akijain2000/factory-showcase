@@ -1,0 +1,8 @@
+wave,dimension,before,after,delta,key_insight
+1,System Prompts,6.5,9.0,2.5,Refusal paths + memory strategy = biggest prompt quality signal
+2,Tool Design,6.0,9.0,3.0,Error taxonomy with retryable flags = most impactful tool addition
+3,Source Code,4.0,9.0,5.0,State machine + circuit breakers = largest single score jump
+4,Testing,5.0,9.0,4.0,Error recovery + adversarial tests = essential production coverage
+5,Observability,0.0,9.0,9.0,SLOs + tracing = from zero to production-ready
+6,Documentation,6.0,9.0,3.0,Mermaid diagrams + env matrix = documentation quality leap
+7,Safety + Memory,5.0,9.0,4.0,SECURITY.md + HITL gates = production safety baseline
