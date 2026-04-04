@@ -63,6 +63,30 @@ Schedule **multiple independent child executions** (tool calls, jobs, or HTTP ta
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| QUEUE_FULL | yes | Executor queue at capacity; use `queue_overflow` policy |
+| SHARD_REJECTED | no | Invalid shard payload or `target_tool` unknown |
+| CORRELATION_INVALID | no | Malformed or reused `correlation_id` where uniqueness required |
+| CONCURRENCY_BACKPRESSURE | yes | Active limit reached; request blocked or deferred |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 45s
+- Rate limit: 200 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `correlation_id` (required; same id replays schedule semantics per deployment policy)
+- Safe to retry: yes
+- Duplicate detection window: 86400s
+
 ## Side effects
 
 - Enqueues work on the executor queue; may create **trace root** span records.

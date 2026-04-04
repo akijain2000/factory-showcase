@@ -52,6 +52,22 @@ Preflight **USD** and **token envelope** estimates for candidate models before i
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| PRICING_SNAPSHOT_STALE | yes | Pricing table version mismatch |
+| MODEL_UNKNOWN | no | Candidate model id not in table |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 15s
+- Rate limit: 400 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 Read-only against pricing snapshots; may cache results keyed by `(pricing_snapshot_id, token_tuple_hash)` with short TTL. No ledger write.

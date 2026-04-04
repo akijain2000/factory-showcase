@@ -48,7 +48,8 @@ Register a **directed acyclic workflow**: steps, dependencies, optional parallel
           "condition": { "type": "string", "description": "Optional named branch tag" }
         }
       }
-    }
+    },
+    "dag_register_token": { "type": "string", "maxLength": 128 }
   }
 }
 ```
@@ -64,6 +65,30 @@ Register a **directed acyclic workflow**: steps, dependencies, optional parallel
   "validation": { "acyclic": true, "warnings": [] }
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| DAG_CYCLIC | no | Graph contains a cycle |
+| DUPLICATE_REVISION | no | `dag_id` + `revision` already registered |
+| NODE_LIMIT | no | `nodes` or `edges` exceed deployment limits |
+| REGISTRY_UNAVAILABLE | yes | DAG registry backend error |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 30s
+- Rate limit: 20 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `dag_register_token` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 86400s
 
 ## Side effects
 

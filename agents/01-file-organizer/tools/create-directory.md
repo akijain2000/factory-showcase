@@ -21,6 +21,11 @@ Create a directory relative to the workspace root. Creates parent directories wh
       "type": "string",
       "pattern": "^0[0-7]{3}$",
       "description": "Optional Unix mode string e.g. \"0755\"."
+    },
+    "idempotency_key": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Optional dedupe key for safe retries."
     }
   }
 }
@@ -43,6 +48,29 @@ If the directory already exists:
   "result": { "path": "by-date/2026/04", "created": false }
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| PATH_OUTSIDE_ROOT | no | Path escapes `FILE_ORGANIZER_ROOT` |
+| INVALID_PATH | no | Malformed or empty path segment |
+| PERMISSION_DENIED | no | Insufficient access |
+| DISK_FULL | no | Filesystem has no space |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+
+## Timeouts and rate limits
+
+- Default timeout: 30s
+- Rate limit: 120 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `idempotency_key` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 300s
 
 ## Side effects
 

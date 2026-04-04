@@ -44,6 +44,23 @@ Scan text for high-confidence secret patterns (API keys, tokens, private keys).
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| CONTENT_REF_INVALID | no | Opaque handle not found or expired |
+| SCAN_ENGINE_ERROR | yes | Secret scanner backend failure |
+| PAYLOAD_TOO_LARGE | no | Blob exceeds scanner limits |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 120s
+- Rate limit: 40 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 Read-only analysis.

@@ -42,6 +42,22 @@ Normalize, deduplicate, and sort findings from sub-agents.
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| FINDING_SCHEMA_INVALID | no | Finding object missing required fields |
+| MERGE_LIMIT_EXCEEDED | no | Input set too large for single merge |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 30s
+- Rate limit: 120 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 None.

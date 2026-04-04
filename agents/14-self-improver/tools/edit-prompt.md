@@ -38,6 +38,28 @@ Create a **candidate** prompt revision from a parent hash using a unified diff o
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| VERSION_CONFLICT | no | `parent_hash` does not match registry |
+| DIFF_REJECTED | no | Diff failed lint or safety checks |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 90s
+- Rate limit: 40 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `idempotency_key` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 600s
+
 ## Side effects
 
 Writes candidate record; triggers optional static **lint** (forbidden phrases, length). On `parent_hash` mismatch, returns `VERSION_CONFLICT` without creating a candidate.

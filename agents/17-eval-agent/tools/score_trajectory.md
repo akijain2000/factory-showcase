@@ -65,6 +65,23 @@ Scores an agent trajectory (ordered steps: thoughts, tool calls, observations) a
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| RUBRIC_NOT_FOUND | no | Unknown or revoked `rubric_id` |
+| TRAJECTORY_INVALID | no | Steps missing required fields or exceed limits |
+| SCORING_TIMEOUT | yes | Model or rules engine exceeded deadline |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 120s
+- Rate limit: 60 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 Read-only.

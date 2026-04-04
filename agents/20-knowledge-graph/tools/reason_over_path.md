@@ -53,6 +53,24 @@ Finds and reasons over connecting structure between two entities in the knowledg
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| ENTITY_NOT_FOUND | no | `source_id` or `target_id` not in graph |
+| PATH_NOT_FOUND | no | No connecting path within policy limits |
+| REASONING_TIMEOUT | yes | Path search or LLM grounding exceeded deadline |
+| GRAPH_UNAVAILABLE | yes | Graph backend error |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 120s
+- Rate limit: 60 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 Read-only.

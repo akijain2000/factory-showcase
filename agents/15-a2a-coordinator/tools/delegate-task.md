@@ -61,6 +61,30 @@ Send **subtasks** to peer agents under an agreed `protocol_id`, returning **task
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| BUS_UNAVAILABLE | yes | Message bus or queue temporarily unavailable |
+| POLICY_DENIED | no | `POLICY_GATE_REF` rejected payload classification |
+| PEER_REJECTED | no | Target agent refused subtask (capacity, schema) |
+| PROTOCOL_MISMATCH | no | Subtask does not match agreed `protocol_id` |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 60s
+- Rate limit: 90 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `idempotency_key` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 86400s
+
 ## Side effects
 
 Publishes work items to `A2A_MESSAGE_BUS_REF`; enforces `POLICY_GATE_REF` on `inputs_ref` classifications. Retries are idempotent per `idempotency_key`. Does not embed large payloads inline—only references.

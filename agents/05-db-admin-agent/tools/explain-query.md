@@ -30,6 +30,23 @@ Return execution plan and optimizer estimates for a statement (typically SELECT/
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| POLICY_DENY | no | `analyze: true` not allowed by profile |
+| SYNTAX_ERROR | no | SQL could not be parsed |
+| CONNECTION_FAILED | yes | Database unreachable |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 60s
+- Rate limit: 60 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 `analyze: true` may execute the query on some engines—**gated** by profile.

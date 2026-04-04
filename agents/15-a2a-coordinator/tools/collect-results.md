@@ -23,7 +23,8 @@ Gather **terminal or partial** outcomes for delegated tasks, normalize statuses,
       "enum": ["all_terminal", "first_success", "partial_ok"],
       "default": "all_terminal"
     },
-    "per_handle_timeout_ms": { "type": "integer", "minimum": 100, "maximum": 600000, "default": 60000 }
+    "per_handle_timeout_ms": { "type": "integer", "minimum": 100, "maximum": 600000, "default": 60000 },
+    "collection_idempotency_key": { "type": "string", "maxLength": 128 }
   }
 }
 ```
@@ -46,6 +47,29 @@ Gather **terminal or partial** outcomes for delegated tasks, normalize statuses,
   "summary": "Two agents disagree on root cause classification."
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| HANDLE_NOT_FOUND | no | One or more task handles are unknown |
+| ARTIFACT_FETCH_FAILED | yes | Signed URL or artifact store error |
+| WAIT_POLICY_UNSATISFIED | no | Tasks did not reach terminal state under `wait_policy` |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 300s (bounded by `per_handle_timeout_ms` aggregation)
+- Rate limit: 60 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `collection_idempotency_key` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 3600s
 
 ## Side effects
 

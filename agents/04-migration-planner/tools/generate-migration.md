@@ -19,6 +19,11 @@ Generate migration artifacts: ordered forward operations each with matching roll
       "type": "string",
       "enum": ["online", "locking_ok", "maintenance_window"],
       "default": "online"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Optional dedupe key for artifact writes."
     }
   }
 }
@@ -40,6 +45,29 @@ Generate migration artifacts: ordered forward operations each with matching roll
   ]
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| INTENT_AMBIGUOUS | no | Clarify constraints before generation |
+| DIALECT_UNSUPPORTED | no | `dialect` not enabled |
+| GENERATION_FAILED | yes | LLM or template engine transient error |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 120s
+- Rate limit: 20 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `idempotency_key` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 300s
 
 ## Side effects
 

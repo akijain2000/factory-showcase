@@ -56,6 +56,23 @@ Generates task-specific evaluation rubrics from a natural-language task descript
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| TASK_DESCRIPTION_INVALID | no | Empty or disallowed content in `task_description` |
+| MODEL_UNAVAILABLE | yes | Rubric generation backend overloaded or down |
+| DIMENSION_LIMIT | no | `num_dimensions` outside allowed deployment range |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 180s
+- Rate limit: 40 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 Read-only (may persist rubric in backing store if your deployment enables caching; default spec assumes ephemeral generation only).

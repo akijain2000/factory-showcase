@@ -42,6 +42,29 @@ Apply a **deterministic** merge strategy or escalate with structured options whe
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| CONFLICT_SET_NOT_FOUND | no | Unknown or expired `conflict_set_id` |
+| STRATEGY_UNAVAILABLE | no | Requested strategy cannot be applied (e.g. missing tiebreaker agent) |
+| ESCALATION_FAILED | yes | Ticketing or escalation backend error |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 120s
+- Rate limit: 30 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `conflict_set_id` (required; replays return same resolution artifact when strategy unchanged)
+- Safe to retry: yes
+- Duplicate detection window: 86400s
+
 ## Side effects
 
 On `human_escalation`, opens ticket with redacted summaries. On `redelegate_tiebreaker`, enqueues a new subtask (counts toward depth policy). Records immutable **resolution artifact** for compliance review.

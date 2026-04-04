@@ -25,7 +25,8 @@ Executes a single node in a directed acyclic graph (DAG) workflow: resolves inpu
       "type": "object",
       "description": "Key-value inputs for this step (may include outputs from upstream steps).",
       "additionalProperties": true
-    }
+    },
+    "step_execution_id": { "type": "string", "maxLength": 128 }
   },
   "required": ["step_id", "dag_id", "inputs"],
   "additionalProperties": false
@@ -50,6 +51,30 @@ Executes a single node in a directed acyclic graph (DAG) workflow: resolves inpu
   }
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| STEP_FAILED | no | Handler returned failure or validation error |
+| DAG_NOT_FOUND | no | Unknown `dag_id` |
+| DEPENDENCY_UNSATISFIED | no | Upstream steps not complete |
+| HANDLER_TIMEOUT | yes | Step execution exceeded configured timeout |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 3600s (per-step `timeout_ms` may be lower)
+- Rate limit: 200 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `step_execution_id` (optional field in arguments)
+- Safe to retry: yes (handlers should be idempotent where `durability` is `required`)
+- Duplicate detection window: 86400s
 
 ## Side effects
 

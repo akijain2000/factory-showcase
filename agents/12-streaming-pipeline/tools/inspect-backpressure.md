@@ -50,6 +50,22 @@ Read **lag**, **queue depth**, and **flow control** signals for topics and consu
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| CONSUMER_GROUP_UNKNOWN | no | `consumer_group` not registered |
+| METRICS_UNAVAILABLE | yes | Broker metrics backend unreachable |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 20s
+- Rate limit: 300 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 Read-only against `BACKPRESSURE_METRICS_REF` / broker APIs. May increment a **cached read** counter for rate limiting telemetry. Does not mutate pipeline topology.

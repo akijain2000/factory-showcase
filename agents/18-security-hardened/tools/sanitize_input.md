@@ -49,6 +49,23 @@ Sanitizes user-supplied text against common injection and delimiter patterns (e.
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| RULESET_UNAVAILABLE | yes | Sanitization rules backend error |
+| INPUT_TOO_LARGE | no | `raw_input` exceeds deployment limit |
+| TRUST_LEVEL_INVALID | no | Unknown or disallowed `trust_level` for tenant |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 20s
+- Rate limit: 400 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 Read-only (returns new string; does not mutate caller buffers).

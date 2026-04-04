@@ -37,7 +37,8 @@ Propose **typed edges** between entities with evidence spans, confidence, and te
           "valid_to": { "type": "string", "format": "date" }
         }
       }
-    }
+    },
+    "edge_batch_idempotency_key": { "type": "string", "maxLength": 128 }
   }
 }
 ```
@@ -59,6 +60,30 @@ Propose **typed edges** between entities with evidence spans, confidence, and te
   "rejected": [{ "triple": "OWNS", "reason": "below_threshold" }]
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| DOCUMENT_NOT_FOUND | no | Unknown `document_ref` |
+| UPSERT_FAILED | yes | Graph store write error |
+| DEDUP_CONFLICT | no | Edge collides with existing truthy assertion |
+| THRESHOLD_POLICY | no | All candidates rejected by confidence rules |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 120s
+- Rate limit: 40 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `edge_batch_idempotency_key` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 86400s
 
 ## Side effects
 

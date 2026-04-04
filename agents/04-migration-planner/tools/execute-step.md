@@ -35,6 +35,29 @@ Runtime MUST verify `MIGRATION_ALLOW_EXECUTE=true` and prior `dry_run` success f
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| GATE_FAILED | no | `MIGRATION_ALLOW_EXECUTE` or dry-run gate failed |
+| EXECUTION_ERROR | yes | DB error after rollback; safe retry depends on step |
+| LOCK_NOT_AVAILABLE | yes | Could not acquire migration lock |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 3600s
+- Rate limit: 20 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `idempotency_key` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 86400s
+
 ## Side effects
 
 Mutates database or infrastructure.

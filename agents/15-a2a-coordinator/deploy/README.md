@@ -33,3 +33,42 @@
 
 - **Schema drift:** bump `payload_schema_ref` version; roll peers before coordinator promotion.
 - **Conflict spikes:** temporarily switch default strategy to `human_escalation` for sensitive domains.
+
+## Dockerfile skeleton
+
+```dockerfile
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+ENV PYTHONUNBUFFERED=1
+EXPOSE 8080
+CMD ["python", "-m", "uvicorn", "host_main:app", "--host", "0.0.0.0", "--port", "8080"]
+```
+
+## Required secrets
+
+| Secret | Purpose |
+|--------|---------|
+| `AGENT_DIRECTORY_CREDENTIALS` | Registry access for `AGENT_DIRECTORY_URI` |
+| `A2A_BUS_CREDENTIALS` | mTLS cert or OAuth for message bus |
+| `DELEGATE_TOKEN_SIGNING_KEY` | Short-lived delegation JWTs if using `DELEGATE_TOKEN_ISSUER_REF` |
+| `MODEL_API_KEY` | Coordinator reasoning |
+
+## CPU and memory limits
+
+| Workload | CPU request | CPU limit | Memory request | Memory limit |
+|----------|-------------|-----------|----------------|--------------|
+| Coordinator | 500m | 4 | 512Mi | 2Gi |
+
+Spikes during fan-out; scale horizontally with sticky `correlation_id` routing if your bus supports it.
+
+## Health check configuration
+
+| Probe | Path / command | Initial delay | Period | Timeout | Success |
+|-------|----------------|---------------|--------|---------|---------|
+| Liveness | `GET /healthz` | 15s | 10s | 2s | HTTP 200 |
+| Readiness | `GET /readyz` | 5s | 5s | 5s | 200 when directory + bus + policy gate probe pass |
+
+Optional: readiness includes a lightweight `discover_agents` cache refresh success bit to avoid routing during registry outages.

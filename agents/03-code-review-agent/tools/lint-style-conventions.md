@@ -30,6 +30,23 @@ Run configured style rules (naming, import order, formatting drift vs project gu
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| LINTER_CRASH | yes | Subprocess exited unexpectedly |
+| RULESET_UNKNOWN | no | `ruleset` not configured |
+| PATH_NOT_FOUND | no | File or directory missing |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 90s
+- Rate limit: 60 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 May invoke local linter subprocess (sandboxed).

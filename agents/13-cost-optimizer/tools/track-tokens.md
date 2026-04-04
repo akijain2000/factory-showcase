@@ -52,6 +52,28 @@ Record **actual** token usage and billed cost for a completed or partial request
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| LEDGER_UNAVAILABLE | yes | Budget ledger write path failed |
+| DUPLICATE_REQUEST_ID | no | `request_id` already recorded |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 20s
+- Rate limit: 2000 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `request_id` (required field in arguments; duplicate posts return existing ledger entry)
+- Safe to retry: yes
+- Duplicate detection window: 86400s
+
 ## Side effects
 
 Appends immutable ledger entry; triggers **circuit breaker** evaluation asynchronously per `CIRCUIT_BREAKER_POLICY_REF`. May update real-time dashboards. Does not store raw prompt text unless `allow_prompt_logging` flag is set in policy (default false).

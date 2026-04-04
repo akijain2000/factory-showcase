@@ -39,6 +39,31 @@ Apply a **single** DDL statement after **HITL** approval and policy checks.
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| HITL_REQUIRED | no | Missing or invalid `approval_id` |
+| POLICY_DENY | no | Violates sandbox or forbidden verb |
+| BACKUP_REQUIRED | no | Policy requires valid `backup_id` |
+| LOCK_TIMEOUT | yes | Could not acquire lock in time |
+| DDL_SYNTAX_ERROR | no | Parse tree rejected |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 300s
+- Rate limit: 15 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `idempotency_key` (required field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 86400s
+
 ## Errors
 
 | `code` | Meaning |

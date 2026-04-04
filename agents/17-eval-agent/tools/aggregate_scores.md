@@ -39,7 +39,8 @@ Combine multiple per-trajectory score records into cohort statistics and pass/fa
           }
         }
       }
-    }
+    },
+    "cohort_report_idempotency_key": { "type": "string", "maxLength": 128 }
   }
 }
 ```
@@ -58,6 +59,30 @@ Combine multiple per-trajectory score records into cohort statistics and pass/fa
   "outliers": []
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| SCORE_RECORD_NOT_FOUND | no | One or more `score_record_refs` missing |
+| AGGREGATION_INVALID | no | `aggregation` parameters inconsistent with method |
+| GATE_EVAL_FAILED | no | Gate rules could not be evaluated |
+| STORE_UNAVAILABLE | yes | Artifact or score store error |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 90s
+- Rate limit: 45 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `cohort_report_idempotency_key` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 86400s
 
 ## Side effects
 

@@ -55,6 +55,27 @@ Produce a **structured post-mortem** of a model output against explicit success 
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| REFLECTION_FAILED | yes | Internal reflection worker error |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 120s
+- Rate limit: 60 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `session_id` (optional field in arguments; same session + content hash dedupes)
+- Safe to retry: yes
+- Duplicate detection window: 300s
+
 ## Side effects
 
 Appends reflection record to session store keyed by `session_id`; may enqueue a low-priority **analytics** event (aggregated metrics only). Does not modify live system prompt.

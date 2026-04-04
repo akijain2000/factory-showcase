@@ -39,6 +39,28 @@ Promote a candidate prompt to **active** (`keep`) or discard it (`discard`), upd
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| REVIEW_POLICY_VIOLATION | no | Missing or invalid `review_ticket_id` |
+| CANDIDATE_NOT_FOUND | no | Unknown `candidate_id` |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 45s
+- Rate limit: 30 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `idempotency_key` (optional field in arguments; `candidate_id` + `decision` define logical outcome)
+- Safe to retry: yes
+- Duplicate detection window: 600s
+
 ## Side effects
 
 On `keep`, updates production pointer **only** if review policy satisfied (`review_ticket_id` when required). On `discard`, marks candidate **archived**. Notifies subscribers via registry webhook. Always writes audit row with decision rationale codes.

@@ -62,6 +62,28 @@ Rank, deduplicate, and structure raw artifacts (logs, files, messages) into a **
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| ARTIFACT_LIMIT_EXCEEDED | no | Too many or too large `raw_artifacts` entries |
+| REDACTION_FAILURE | no | Secret redaction could not be applied safely |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 180s
+- Rate limit: 45 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `idempotency_key` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 600s
+
 ## Side effects
 
 Persists the bundle to `CONTEXT_STORE_URI` (or equivalent), emits an audit event with `bundle_id`, objective hash, and item count. **No** external network calls beyond the configured store. When `redact_secrets` is true, applies host redaction rules and logs redaction counts only (not raw matches).

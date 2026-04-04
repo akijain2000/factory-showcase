@@ -26,7 +26,8 @@ Align participating agents on **schemas**, **error codes**, **idempotency**, and
       "enum": ["mtls", "oauth_client_credentials", "ephemeral_delegate_token"],
       "default": "ephemeral_delegate_token"
     },
-    "sla_ms": { "type": "integer", "minimum": 100, "maximum": 3600000 }
+    "sla_ms": { "type": "integer", "minimum": 100, "maximum": 3600000 },
+    "negotiation_idempotency_key": { "type": "string", "maxLength": 128 }
   }
 }
 ```
@@ -42,6 +43,30 @@ Align participating agents on **schemas**, **error codes**, **idempotency**, and
   "notes": ["Error model maps TOOL_TIMEOUT to retryable=true."]
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| SCHEMA_MISMATCH | no | Peer rejected payload or error schema alignment |
+| PEER_UNAVAILABLE | yes | One or more peers did not respond in time |
+| AUTH_BINDING_FAILED | no | Could not establish requested `auth_binding` |
+| NEGOTIATION_TIMEOUT | yes | Round-trip negotiation exceeded SLA |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 180s
+- Rate limit: 20 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `negotiation_idempotency_key` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 86400s
 
 ## Side effects
 

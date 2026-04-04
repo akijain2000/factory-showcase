@@ -37,7 +37,8 @@ Adjust rubric **weights** or **anchors** using labeled anchor trajectories to al
       "type": "array",
       "items": { "type": "string" },
       "maxItems": 200
-    }
+    },
+    "calibration_job_id": { "type": "string", "maxLength": 128 }
   }
 }
 ```
@@ -53,6 +54,29 @@ Adjust rubric **weights** or **anchors** using labeled anchor trajectories to al
   "warnings": ["small_anchor_set"]
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| INSUFFICIENT_ANCHORS | no | Too few anchor trajectories for stable calibration |
+| OPTIMIZATION_FAILED | no | Objective could not be improved within constraints |
+| RUBRIC_NOT_FOUND | no | Unknown `base_rubric_id` |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 600s
+- Rate limit: 10 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `calibration_job_id` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 86400s
 
 ## Side effects
 

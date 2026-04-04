@@ -42,6 +42,28 @@ Publish a single **canonical** event to the unified bus with schema version, par
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| BROKER_REJECT | yes | Event bus refused publish (capacity, ACL, schema) |
+| SCHEMA_MISMATCH | no | Payload incompatible with `schema_version` |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 15s
+- Rate limit: 2000 calls per minute per `producer_id`
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `correlation_id` (optional field in arguments; pairs with `topic` + `partition_key` for dedupe)
+- Safe to retry: yes when `delivery` supports at-least-once deduplication
+- Duplicate detection window: 120s
+
 ## Side effects
 
 Writes to `EVENT_BUS_ENDPOINT` (or internal broker). May trigger interceptor chain execution synchronously or asynchronously depending on deployment. Emits metrics: `emit_latency_ms`, `payload_bytes`. **No** direct call to `MODEL_API_ENDPOINT` from this tool.

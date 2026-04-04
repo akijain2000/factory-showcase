@@ -29,6 +29,11 @@ Supervisor-only: delegate a review slice to a specialized sub-agent with explici
     "context": {
       "type": "object",
       "description": "Optional metadata: language, framework, threat model notes"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Optional dedupe key; duplicate handoffs may still spawn distinct runs."
     }
   }
 }
@@ -44,6 +49,29 @@ Supervisor-only: delegate a review slice to a specialized sub-agent with explici
   "subagent_trace_id": "sub-abc"
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| UNKNOWN_TARGET | no | `target` not a registered sub-agent |
+| SCOPE_EMPTY | no | `scope.paths` empty or invalid |
+| HANDOFF_LIMIT | yes | Concurrency or depth limit reached |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 15s
+- Rate limit: 30 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `idempotency_key` (optional field in arguments)
+- Safe to retry: no
+- Duplicate detection window: 60s
 
 ## Side effects
 

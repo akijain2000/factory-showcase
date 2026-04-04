@@ -48,6 +48,28 @@ Loss-aware compression of an existing curated bundle to a target token budget wh
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| COMPRESSION_INFEASIBLE | no | Cannot meet `target_tokens` without violating `preserve_tags` |
+| BUNDLE_NOT_FOUND | no | Unknown `bundle_id` |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 180s
+- Rate limit: 40 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `idempotency_key` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 600s
+
 ## Side effects
 
 Writes new bundle revision linked to parent; records compression provenance (strategy, token deltas). If infeasible to meet `target_tokens` without violating `preserve_tags`, returns `ok: false` with `error.code: COMPRESSION_INFEASIBLE` and does not mutate the original bundle.

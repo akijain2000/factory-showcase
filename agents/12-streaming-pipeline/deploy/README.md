@@ -33,3 +33,54 @@
 
 - Metrics: `interceptor_latency_ms`, `cancel_subtree_total`, `aggregate_state_bytes`, `consumer_lag_seconds`.
 - Logs: correlate `causation_id` across emit → aggregate → consumer spans.
+
+## Dockerfile skeleton
+
+```dockerfile
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+ENV PYTHONUNBUFFERED=1
+EXPOSE 8080
+# EVENT_BUS_* credentials via secret store at runtime
+CMD ["python", "-m", "uvicorn", "host_main:app", "--host", "0.0.0.0", "--port", "8080"]
+```
+
+## Required secrets
+
+| Secret | Purpose |
+|--------|---------|
+| `EVENT_BUS_AUTH` | SASL / API key / client cert for broker |
+| `INTERCEPTOR_REGISTRY_CREDENTIALS` | Read/write `INTERCEPTOR_REGISTRY_URI` |
+| `MODEL_API_KEY` | If `MODEL_API_ENDPOINT` is used for agent reasoning |
+
+## CPU and memory limits
+
+| Workload | CPU request | CPU limit | Memory request | Memory limit |
+|----------|-------------|-----------|----------------|--------------|
+| Agent + bus client | 500m | 4 | 512Mi | 2Gi |
+
+Increase limits when hosting large in-memory aggregate windows; prefer spill-to-store for unbounded state.
+
+## Health check configuration
+
+| Probe | Path / command | Initial delay | Period | Timeout | Success |
+|-------|----------------|---------------|--------|---------|---------|
+| Liveness | `GET /healthz` | 15s | 10s | 2s | HTTP 200, process up |
+| Readiness | `GET /readyz` | 5s | 5s | 5s | 200 when registry + consumer lag probe pass |
+
+Kubernetes example:
+
+```yaml
+livenessProbe:
+  httpGet: { path: /healthz, port: 8080 }
+  initialDelaySeconds: 15
+  periodSeconds: 10
+readinessProbe:
+  httpGet: { path: /readyz, port: 8080 }
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 5
+```

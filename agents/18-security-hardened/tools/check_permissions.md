@@ -32,7 +32,8 @@ Authorize a proposed tool invocation using ABAC/RBAC policy: principal attribute
         "labels": { "type": "object" }
       }
     },
-    "justification": { "type": "string", "maxLength": 2000 }
+    "justification": { "type": "string", "maxLength": 2000 },
+    "authorization_request_id": { "type": "string", "maxLength": 128 }
   }
 }
 ```
@@ -47,6 +48,29 @@ Authorize a proposed tool invocation using ABAC/RBAC policy: principal attribute
   "expires_at_ms": null
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| POLICY_ENGINE_ERROR | yes | Authorization policy service error |
+| PRINCIPAL_INVALID | no | Missing or malformed principal attributes |
+| ELEVATION_DENIED | no | Step-up or break-glass not allowed |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 10s
+- Rate limit: 500 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `authorization_request_id` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 300s
 
 ## Side effects
 

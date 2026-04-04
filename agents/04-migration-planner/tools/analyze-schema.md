@@ -41,6 +41,29 @@ Return structured description of tables, columns, indexes, and constraints relev
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| CONNECTION_FAILED | yes | Catalog DB unreachable |
+| SCOPE_EMPTY | no | No tables matched `scope` |
+| STATS_UNAVAILABLE | yes | Extended stats query failed |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 120s
+- Rate limit: 40 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Pagination
+
+- Default page size: 50
+- Cursor-based: returns `next_cursor` in response
+- Max results per call: 500
+
 ## Side effects
 
 Read-only metadata queries.

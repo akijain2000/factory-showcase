@@ -56,6 +56,28 @@ Error:
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| PATH_OUTSIDE_ROOT | no | Path escapes workspace root |
+| IO_ERROR | yes | Transient filesystem read failure |
+| TIMEOUT | yes | Directory walk exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments or invalid filter |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 60s
+- Rate limit: 60 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Pagination
+
+- Default page size: 200
+- Cursor-based: returns `next_cursor` in response
+- Max results per call: 2000
+
 ## Side effects
 
 None (read-only).

@@ -57,6 +57,29 @@ Query the **agent directory** for peers matching skills, trust tier, latency, an
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| DIRECTORY_UNAVAILABLE | yes | Agent directory backend unreachable or unhealthy |
+| NO_MATCH | no | No agents satisfy the given skill, trust, or residency filters |
+| DIRECTORY_TIMEOUT | yes | Directory query exceeded internal deadline |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 30s
+- Rate limit: 120 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Pagination
+
+- Default page size: 50
+- Cursor-based: returns `next_cursor` in response
+- Max results per call: 200
+
 ## Side effects
 
 Read-only against `AGENT_DIRECTORY_URI`. May update local cache with TTL. Does not contact peer agents directly.

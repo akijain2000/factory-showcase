@@ -40,6 +40,23 @@ Summarize control flow and flag likely bug patterns: missing error handling, ear
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| CONTENT_REF_INVALID | no | Opaque handle not found or expired |
+| LANGUAGE_UNSUPPORTED | no | Analyzer does not support `language` |
+| ANALYSIS_TIMEOUT | yes | Static analysis exceeded deadline |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 120s
+- Rate limit: 40 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 Read-only / static analysis.

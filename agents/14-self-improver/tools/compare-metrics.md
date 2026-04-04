@@ -36,6 +36,22 @@ Compare evaluation metrics between a **baseline** run and a **candidate** run on
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| INCOMPATIBLE_RUN_PAIR | no | Runs do not share `suite_version` |
+| METRICS_UNAVAILABLE | yes | Metrics store unreachable |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 60s
+- Rate limit: 120 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 Read-only against `METRICS_STORE_URI` / artifact indexes; may write a **comparison report** record for audit. If runs mismatch `suite_version`, returns `INCOMPATIBLE_RUN_PAIR` without results.

@@ -43,6 +43,28 @@ Attach an ordered middleware hook to the pipeline for a given topic pattern or g
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| ORDERING_CONFLICT | no | Interceptor order would create a cycle |
+| HANDLER_NOT_DEPLOYED | no | `handler_ref` not found |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 45s
+- Rate limit: 30 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `order_key` (optional field in arguments; pair with `name` + `phase` for stable registration)
+- Safe to retry: yes
+- Duplicate detection window: 300s
+
 ## Side effects
 
 Updates live routing table version; rolling deploy may require **dual-register** during cutover. Records audit entry with principal. Misordered cycles are rejected with `ORDERING_CONFLICT` without applying changes.

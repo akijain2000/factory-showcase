@@ -47,6 +47,28 @@ Evaluate remaining budget for a scope and return **allow**, **downgrade**, or **
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| BUDGET_EXCEEDED | no | Spend would exceed cap for window |
+| SCOPE_UNKNOWN | no | Tenant or scope not provisioned |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 10s
+- Rate limit: 300 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `idempotency_key` (optional field in arguments)
+- Safe to retry: yes for advisory checks; enforced `halt` paths should use key to avoid duplicate notifications
+- Duplicate detection window: 60s
+
 ## Side effects
 
 May write a **budget check** audit record with hashed scope ids. If `enforce: false`, returns advisory values only and does not mutate breaker state. On `halt`, may publish notification webhook per FinOps policy.

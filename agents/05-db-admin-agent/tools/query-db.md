@@ -39,6 +39,30 @@ Run a **single** SQL statement constrained by deployment profile (e.g. SELECT-on
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| POLICY_DENY | no | Non-SELECT or forbidden statement class |
+| SYNTAX_ERROR | no | SQL parse or bind error |
+| QUERY_TIMEOUT | yes | Statement exceeded `timeout_ms` |
+| CONNECTION_FAILED | yes | Pool or network error |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 30s (caller may set `timeout_ms` up to 60s)
+- Rate limit: 120 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Pagination
+
+- Default page size: 1000
+- Cursor-based: returns `next_cursor` in response
+- Max results per call: 10000
+
 ## Policy enforcement
 
 Runtime MUST reject non-SELECT in RO profile.

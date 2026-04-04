@@ -50,6 +50,28 @@ Select a **lower-cost** alternative to the current routing choice while bounding
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| NO_CHEAPER_MODEL | no | No acceptable lower-cost alternative |
+| POLICY_BLOCKS_DOWNGRADE | no | FinOps policy forbids downgrade for task class |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 15s
+- Rate limit: 120 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `request_id` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 300s
+
 ## Side effects
 
 Logs structured downgrade event for FinOps review. May register **sticky downgrade** for burst windows if policy enables burst mode. Does not automatically revert until `route_to_model` is called again without sticky flag.

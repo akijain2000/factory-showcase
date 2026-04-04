@@ -65,6 +65,23 @@ Collects execution traces from concurrent tool calls into a unified timeline wit
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| BRANCH_NOT_FOUND | no | One or more `branch_ids` unknown or expired |
+| TRACE_STORE_TIMEOUT | yes | Trace backend slow or unavailable |
+| TRACE_CORRUPT | no | Events could not be normalized or sorted |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 60s
+- Rate limit: 100 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 Read-only.

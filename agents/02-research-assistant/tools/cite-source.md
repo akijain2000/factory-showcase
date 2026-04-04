@@ -43,6 +43,22 @@ Normalize and validate citation records so the final answer uses consistent meta
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| CITATION_INVALID | no | `ref` missing required fields for `kind` |
+| SCHEMA_MISMATCH | no | Document chunk reference inconsistent |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 10s
+- Rate limit: 300 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 None.

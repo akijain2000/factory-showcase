@@ -44,7 +44,8 @@ Record tamper-evident security and compliance events with minimal sensitive cont
       "type": "array",
       "items": { "type": "string" },
       "maxItems": 20
-    }
+    },
+    "audit_event_id": { "type": "string", "maxLength": 128 }
   }
 }
 ```
@@ -58,6 +59,29 @@ Record tamper-evident security and compliance events with minimal sensitive cont
   "chain_tip": "hmac-sha256:..."
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| APPEND_FAILED | yes | Audit storage write rejected or transient error |
+| STORAGE_QUOTA | no | Tenant or stream quota exceeded |
+| CHAIN_VERIFICATION_FAILED | no | Tamper-evident chain could not be extended |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 15s
+- Rate limit: 1000 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `audit_event_id` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 604800s
 
 ## Side effects
 

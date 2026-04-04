@@ -28,7 +28,8 @@ Heuristic and model-assisted detection of **prompt injection**, tool exfiltratio
       "type": "string",
       "enum": ["fast_rules", "hybrid", "full"],
       "default": "hybrid"
-    }
+    },
+    "detection_request_id": { "type": "string", "maxLength": 128 }
   }
 }
 ```
@@ -47,6 +48,29 @@ Heuristic and model-assisted detection of **prompt injection**, tool exfiltratio
   "explanation_ref": "sec_expl_9c2"
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| MODEL_UNAVAILABLE | yes | Hybrid or full model path unavailable |
+| TEXT_TOO_LARGE | no | `text` exceeds `maxLength` |
+| RULE_ENGINE_ERROR | yes | Fast rules path failed |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 45s (`full` mode may use full budget)
+- Rate limit: 200 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `detection_request_id` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 3600s
 
 ## Side effects
 

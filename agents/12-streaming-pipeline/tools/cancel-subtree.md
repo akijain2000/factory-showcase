@@ -39,6 +39,28 @@ Request **hierarchical cancellation** starting at `scope_id`, optionally drainin
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| SCOPE_NOT_FOUND | no | Unknown `scope_id` |
+| CANCEL_IN_PROGRESS | yes | Concurrent cancel already draining |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 30s
+- Rate limit: 200 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `idempotency_key` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 600s
+
 ## Side effects
 
 Signals cooperative cancel tokens; may **nack** or redirect pending events per policy. When `force: true`, hard-stops workers after grace—use only with break-glass role. Writes cancellation audit with `reason_code` and actor. Idempotent for identical `idempotency_key`.

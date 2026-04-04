@@ -26,6 +26,23 @@ Probe learner mastery for a topic or skill subtree and return structured gaps an
 | `strengths` | array of string | Reliable sub-skills |
 | `recommended_focus` | string | One-sentence next focus |
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| LEARNER_NOT_FOUND | no | Create profile before assessment |
+| TOPIC_UNKNOWN | no | Unknown topic code |
+| ASSESSMENT_TIMEOUT | yes | Model or datastore slow |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 45s
+- Rate limit: 60 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Errors
 
 - `LEARNER_NOT_FOUND` — create profile before assessment

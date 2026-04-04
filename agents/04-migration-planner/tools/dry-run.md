@@ -31,6 +31,23 @@ Validate a single `step_id` without committing (transaction rollback, terraform 
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| STEP_NOT_FOUND | no | Unknown `migration_id` or `step_id` |
+| PLAN_FAILED | no | Validator rejected plan until fixed |
+| PROVIDER_ERROR | yes | Terraform/kubectl/plan backend transient failure |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 600s
+- Rate limit: 30 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 None on production data when implemented with rolled-back transaction or pure plan mode.

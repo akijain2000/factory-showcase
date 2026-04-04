@@ -69,6 +69,30 @@ Traverses the knowledge graph from a start node up to `max_depth`, optionally fi
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| NODE_NOT_FOUND | no | Unknown `start_node_id` |
+| DEPTH_EXCEEDED | no | Traversal stopped by policy before `max_depth` |
+| GRAPH_TIMEOUT | yes | Graph cluster query deadline exceeded |
+| RESULT_TOO_LARGE | no | Induced subgraph exceeded materialization cap |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 90s
+- Rate limit: 100 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Pagination
+
+- Default page size: 500 nodes / 2000 edges (implementation-defined split)
+- Cursor-based: returns `next_cursor` in response when `subgraph.meta.truncated` is true
+- Max results per call: 5000 total elements
+
 ## Side effects
 
 Read-only.

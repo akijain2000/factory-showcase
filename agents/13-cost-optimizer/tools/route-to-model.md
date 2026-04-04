@@ -49,6 +49,28 @@ Select a **model tier** and concrete **model id** from `MODEL_ROUTE_TABLE_REF` g
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| ROUTE_TABLE_UNAVAILABLE | yes | `MODEL_ROUTE_TABLE_REF` unreachable |
+| NO_ELIGIBLE_MODEL | no | No model satisfies SLO and quality band |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 10s
+- Rate limit: 600 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `request_id` (optional field in arguments)
+- Safe to retry: yes (audit rows may dedupe on `request_id`)
+- Duplicate detection window: 120s
+
 ## Side effects
 
 Writes a **routing decision** row to the audit stream (no prompt body). May increment shadow-traffic counters if canary routing is enabled. Does not invoke `MODEL_API_ENDPOINT` by itself.

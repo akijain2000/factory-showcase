@@ -20,7 +20,8 @@ Resumes DAG execution from a persisted checkpoint after interruption, failure, o
       "type": "string",
       "description": "Workflow / DAG instance to resume.",
       "minLength": 1
-    }
+    },
+    "resume_token": { "type": "string", "maxLength": 128 }
   },
   "required": ["checkpoint_id", "dag_id"],
   "additionalProperties": false
@@ -45,6 +46,30 @@ Resumes DAG execution from a persisted checkpoint after interruption, failure, o
   "pending_steps": ["embed_chunks", "quality_check", "index_build"]
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| CHECKPOINT_NOT_FOUND | no | Unknown `checkpoint_id` |
+| DAG_NOT_FOUND | no | Unknown `dag_id` or run not resumable |
+| RUN_CONFLICT | no | Another worker holds lease or state advanced |
+| STORE_UNAVAILABLE | yes | Checkpoint store error |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 60s
+- Rate limit: 40 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `resume_token` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 3600s
 
 ## Side effects
 

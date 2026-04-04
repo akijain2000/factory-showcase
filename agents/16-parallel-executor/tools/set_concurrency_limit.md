@@ -34,7 +34,8 @@ Set or lower the **maximum in-flight** child executions for the current session 
       "minimum": 0,
       "default": 0,
       "description": "Delay before applying decrease to running work (grace window)."
-    }
+    },
+    "limit_change_token": { "type": "string", "maxLength": 128 }
   }
 }
 ```
@@ -51,6 +52,29 @@ Set or lower the **maximum in-flight** child executions for the current session 
   "policy_warnings": []
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| LIMIT_OUT_OF_BOUNDS | no | `limit` below deployment minimum or above hard cap |
+| SCOPE_DENIED | no | Caller cannot change `scope` (e.g. `global_hint` restricted) |
+| QUOTA_SERVICE_ERROR | yes | Control plane unavailable |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 15s
+- Rate limit: 30 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `limit_change_token` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 300s
 
 ## Side effects
 

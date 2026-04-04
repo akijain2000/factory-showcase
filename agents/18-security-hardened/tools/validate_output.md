@@ -47,6 +47,23 @@ Validates agent-generated output against a named policy before it is returned to
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| POLICY_NOT_FOUND | no | Unknown `policy_id` |
+| POLICY_ENGINE_ERROR | yes | Rule evaluation backend failed |
+| OUTPUT_TOO_LARGE | no | Input exceeds configured max size |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 30s
+- Rate limit: 300 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 Read-only (output is not written to durable storage by this tool; callers may persist `redacted_output`).

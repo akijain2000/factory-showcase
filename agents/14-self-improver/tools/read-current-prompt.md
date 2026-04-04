@@ -34,6 +34,22 @@ Fetch the **authoritative** current prompt record for a `prompt_id`, including v
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| PROMPT_NOT_FOUND | no | Unknown `prompt_id` or namespace |
+| REGISTRY_UNAVAILABLE | yes | `PROMPT_REGISTRY_URI` unreachable |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 15s
+- Rate limit: 200 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 Read-only against `PROMPT_REGISTRY_URI`. May emit audit read event. **Never** logs full `content` at INFO in production unless explicitly enabled.

@@ -58,6 +58,28 @@ Define or query a **stateful aggregation** over an event stream: windows, sessio
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| AGGREGATE_CONFLICT | no | Incompatible definition for existing `aggregate_id` |
+| TOPIC_NOT_FOUND | no | Unknown `topic` |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 60s
+- Rate limit: 60 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `aggregate_id` (required; repeated calls with identical window/fold definition are idempotent)
+- Safe to retry: yes
+- Duplicate detection window: 600s
+
 ## Side effects
 
 Allocates or updates durable **state store** handles; may create internal changelog topics. Continuous mode increases write amplification—monitor with `inspect_backpressure`.

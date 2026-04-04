@@ -37,6 +37,29 @@ Run a web search query and return ranked results with titles, URLs, and snippets
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| RATE_LIMIT | yes | Provider or session quota exceeded |
+| PROVIDER_ERROR | yes | Upstream search API failure |
+| BAD_QUERY | no | Empty, too long, or blocked query |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 30s
+- Rate limit: 30 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Pagination
+
+- Default page size: 5
+- Cursor-based: returns `next_cursor` in response
+- Max results per call: 20
+
 ## Side effects
 
 Outbound network call; may incur cost. Rate-limit per session.

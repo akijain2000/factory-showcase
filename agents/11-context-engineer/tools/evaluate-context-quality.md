@@ -50,6 +50,22 @@ Score a curated (or compressed) bundle for **coverage**, **grounding**, **redund
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| BUNDLE_NOT_FOUND | no | `curated_bundle_id` unknown |
+| EVALUATION_FAILED | yes | Scorer worker error |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 90s
+- Rate limit: 120 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Side effects
 
 Read-only against bundle content; may write **ephemeral** evaluation cache keyed by `(bundle_id, objective_hash)` with TTL. No user-visible mutation of prompts or bundles.

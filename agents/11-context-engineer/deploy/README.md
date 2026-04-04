@@ -33,3 +33,46 @@
 
 - Metrics: `curate_context_duration_ms`, `compression_ratio`, `quality_pass_rate`, `prompt_dry_run_count`, `prompt_promotion_count`.
 - Tracing: propagate `session_id` and `bundle_id` on all tool spans.
+
+## Dockerfile skeleton
+
+```dockerfile
+# Reference image — pin versions in production
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+ENV PYTHONUNBUFFERED=1
+EXPOSE 8080
+# Load CONTEXT_STORE_URI, MODEL credentials from orchestrator — not baked in
+CMD ["python", "-m", "uvicorn", "host_main:app", "--host", "0.0.0.0", "--port", "8080"]
+```
+
+## Required secrets
+
+| Secret | Purpose |
+|--------|---------|
+| `MODEL_API_KEY` / OAuth client | Authenticate to `MODEL_API_ENDPOINT` |
+| `CONTEXT_STORE_CREDENTIALS` | DB/object-store access for `CONTEXT_STORE_URI` |
+| `PROMPT_SIGNING_KEY` (optional) | KMS reference for verifying promoted prompt signatures |
+
+Never commit secrets; inject via your platform secret store (Kubernetes secrets, Vault, Parameter Store, etc.).
+
+## CPU and memory limits
+
+| Workload | CPU request | CPU limit | Memory request | Memory limit |
+|----------|-------------|-----------|----------------|--------------|
+| API + agent loop | 250m | 2 | 512Mi | 2Gi |
+| Async compression worker | 500m | 4 | 1Gi | 4Gi |
+
+Tune for `CONTEXT_MAX_TOKENS` and concurrent tenants; compression workers need headroom for large bundles.
+
+## Health check configuration
+
+| Probe | Path / command | Initial delay | Period | Timeout | Success |
+|-------|----------------|---------------|--------|---------|---------|
+| Liveness | `GET /healthz` | 10s | 10s | 2s | HTTP 200 |
+| Readiness | `GET /readyz` | 5s | 5s | 3s | 200 when store + registry reachable |
+
+gRPC or custom runtimes: equivalent checks must verify `CONTEXT_STORE_URI` connectivity and prompt registry read access within SLO.

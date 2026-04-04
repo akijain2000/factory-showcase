@@ -38,7 +38,8 @@ Persist a **durable snapshot** of workflow progress: completed steps, branch dec
         "notes": { "type": "string", "maxLength": 4000 }
       }
     },
-    "ttl_hours": { "type": "integer", "minimum": 1, "maximum": 720, "default": 168 }
+    "ttl_hours": { "type": "integer", "minimum": 1, "maximum": 720, "default": 168 },
+    "checkpoint_idempotency_key": { "type": "string", "maxLength": 128 }
   }
 }
 ```
@@ -53,6 +54,30 @@ Persist a **durable snapshot** of workflow progress: completed steps, branch dec
   "size_bytes": 18233
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| STORAGE_QUOTA | no | Checkpoint store quota exceeded |
+| RUN_NOT_FOUND | no | Unknown `run_id` |
+| SERIALIZATION_ERROR | no | `state` could not be encoded |
+| ENCRYPTION_ERROR | yes | At-rest encryption transient failure |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 120s
+- Rate limit: 100 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `checkpoint_idempotency_key` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 86400s
 
 ## Side effects
 

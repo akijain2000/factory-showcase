@@ -24,6 +24,28 @@ Assign ticket to a queue, agent group, or downstream automation per **routing ru
 | `assignment_id` | string | Tracking id |
 | `sla_due` | string | ISO-8601 if applicable |
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| UNKNOWN_DESTINATION | no | `destination` not in routing table |
+| RULE_VIOLATION | no | Route inconsistent with classification constraints |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 20s
+- Rate limit: 200 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `idempotency_key` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 600s
+
 ## Errors
 
 - `UNKNOWN_DESTINATION`

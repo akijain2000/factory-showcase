@@ -28,3 +28,54 @@
 - **Secrets:** never log DSNs; rotate RW credentials on compromise.
 - **Break-glass:** separate role for `DROP DATABASE` class operations; keep off by default.
 - **Auditing:** log every `execute_ddl` with `approval_id`, `idempotency_key`, and operator identity from HITL payload.
+
+## Dockerfile skeleton
+
+```dockerfile
+FROM python:3.12-slim
+
+WORKDIR /app
+COPY . /app
+# RUN pip install --no-cache-dir -r requirements.txt
+
+ENV PYTHONUNBUFFERED=1
+
+# DB_ADMIN_DSN_REF, DB_ADMIN_READ_ONLY, HITL endpoint secrets, MODEL_API_KEY — inject via vault
+
+USER nobody
+CMD ["python", "-c", "print('Wire DB pool + HITL client; see src/agent.py')"]
+```
+
+Prefer distroless or hardened base after proving compatibility; ensure ODBC/JDBC drivers if needed via multi-stage build.
+
+## Required secrets (summary)
+
+| Secret / env | Purpose |
+|--------------|---------|
+| `DB_ADMIN_DSN_REF` | Resolve to RO/RW database credentials |
+| HITL / ticketing token endpoint | Validate `approval_id` for `execute_ddl` |
+| `MODEL_API_KEY` | Optional LLM assist (keep DDL approval human-gated) |
+
+## Resource limits (reference)
+
+| Resource | Recommendation |
+|----------|----------------|
+| CPU | 0.5–1 vCPU |
+| Memory | 256–512 MiB |
+| DB client timeouts | 5–30s for `query_db`; strict lock timeouts for DDL |
+
+## Health check configuration
+
+- `GET /healthz`: process up.
+- `GET /readyz`: RO DB ping; HITL reachable when DDL enabled.
+
+```yaml
+readinessProbe:
+  httpGet:
+    path: /readyz
+    port: 8080
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+```

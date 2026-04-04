@@ -41,6 +41,29 @@ Retrieve relevant chunks from the configured document index (vector + metadata f
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| INDEX_UNAVAILABLE | yes | Vector or metadata index unreachable |
+| QUERY_TIMEOUT | yes | Retrieval exceeded deadline |
+| FILTER_REJECTED | no | Invalid or unsupported metadata filter |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 45s
+- Rate limit: 90 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Pagination
+
+- Default page size: 8
+- Cursor-based: returns `next_cursor` in response
+- Max results per call: 32
+
 ## Side effects
 
 Read-only against index.

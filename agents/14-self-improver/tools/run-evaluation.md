@@ -43,6 +43,28 @@ Execute the pinned evaluation suite against a **prompt candidate** in an isolate
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| SUITE_NOT_FOUND | no | Unknown `suite_version` |
+| RUNNER_FAILED | yes | Isolated runner crashed or OOM |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 3600s
+- Rate limit: 10 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `idempotency_key` (optional field in arguments)
+- Safe to retry: yes (same key returns existing `run_id` when run finished)
+- Duplicate detection window: 7200s
+
 ## Side effects
 
 Spends compute budget; writes artifacts to object store; records row in `METRICS_STORE_URI` with **run_id**. Uses `MODEL_API_ENDPOINT` indirectly through runner configuration—credentials remain outside prompts.

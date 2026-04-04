@@ -24,6 +24,23 @@ Probe service health endpoints, dependency graphs, or SLO panels.
 | `checks` | array | Per-probe results with latency/error |
 | `as_of` | string | ISO-8601 |
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| SERVICE_UNKNOWN | no | `service` not in catalog |
+| PROBE_TIMEOUT | yes | One or more probes timed out |
+| OBSERVABILITY_UNAVAILABLE | yes | Metrics or health API unreachable |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 45s
+- Rate limit: 120 calls per minute
+- Backoff strategy: exponential with jitter
+
 ## Errors
 
 - `SERVICE_UNKNOWN`

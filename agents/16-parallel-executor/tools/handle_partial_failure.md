@@ -35,7 +35,8 @@ Apply a **declared recovery policy** when one or more shards fail, time out, or 
     "compensation_plan_ref": {
       "type": "string",
       "description": "Reference to registered compensator when policy is compensate."
-    }
+    },
+    "recovery_idempotency_key": { "type": "string", "maxLength": 128 }
   }
 }
 ```
@@ -53,6 +54,30 @@ Apply a **declared recovery policy** when one or more shards fail, time out, or 
   "notes": []
 }
 ```
+
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| CORRELATION_NOT_FOUND | no | Unknown `correlation_id` for recovery |
+| RETRY_EXHAUSTED | no | `retry_failed` exceeded `max_attempts` |
+| COMPENSATION_FAILED | yes | Compensator invocation or registry error |
+| POLICY_CONFLICT | no | Recovery `policy` incompatible with run state |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 90s
+- Rate limit: 120 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Idempotency
+
+- Idempotency key: `recovery_idempotency_key` (optional field in arguments)
+- Safe to retry: yes
+- Duplicate detection window: 3600s
 
 ## Side effects
 

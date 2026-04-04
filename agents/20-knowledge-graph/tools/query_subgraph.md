@@ -46,6 +46,30 @@ Retrieve a **pattern-shaped subgraph** (e.g., star, path, small motif) matching 
 }
 ```
 
+## Error taxonomy
+
+| Code | Retryable | Description |
+|------|-----------|-------------|
+| PATTERN_INVALID | no | `pattern` incompatible with `bindings` |
+| MOTIF_NOT_ALLOWLISTED | no | `motif_ref` not registered |
+| QUERY_TIMEOUT | yes | Graph query exceeded deadline |
+| BINDING_ERROR | no | Invalid or out-of-scope anchor in `bindings` |
+| TIMEOUT | yes | Operation exceeded time limit |
+| INVALID_INPUT | no | Malformed arguments |
+| PERMISSION_DENIED | no | Insufficient access |
+
+## Timeouts and rate limits
+
+- Default timeout: 60s
+- Rate limit: 80 calls per minute
+- Backoff strategy: exponential with jitter
+
+## Pagination
+
+- Default page size: 200 (same as default `limit`)
+- Cursor-based: returns `next_cursor` in response
+- Max results per call: 2000
+
 ## Side effects
 
 - Executes **compiled** server-side queries only; rejects ad-hoc strings not in allowlist.
