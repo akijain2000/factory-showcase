@@ -1,4 +1,6 @@
-# Agent Grading Report
+# Agent Grading Report (Legacy - Original 10 Agents)
+
+> **Deprecation Notice:** This file covers the original 10 agents only. For the current 20-agent grading with CLASSic framework (Cost, Latency, Accuracy, Stability, Security) and AdaRubric task-adaptive evaluation, see [cycle-5-final.md](cycle-5-final.md). The agent validator now includes 10 checks (added cost awareness and output validation).
 
 Graded against [AGENT_SPEC.md](../../agent-factory/AGENT_SPEC.md) 8 dimensions (0-10) and `validate-agent.ts` results.
 

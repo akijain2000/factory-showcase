@@ -1,4 +1,6 @@
-# Skill Grading Report
+# Skill Grading Report (Legacy - Original 10 Skills)
+
+> **Deprecation Notice:** This file covers the original 10 skills only. For the current 20-skill grading with the expanded 15-check validator, see [cycle-5-final.md](cycle-5-final.md). The validator now checks for test scenarios, examples/code blocks, and gotchas sections in addition to the original checks.
 
 Graded against [SKILL_SPEC.md](../../skill-factory/SKILL_SPEC.md) dimensions and `validate-skill.ts` results.
 
